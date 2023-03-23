@@ -6,10 +6,19 @@ endif
 
 ;gets rid of life and timer decrementing
 if or(defined("notimer"),defined("nolives"))
+  ORG $af80bc 
+  autoclean JSL set
+
   ORG $838d3e
   NOP
   NOP
   JML lifesaver
+
+  ORG $82bacf
+  autoclean JSL unset
+
+  ORG $afee48
+  autoclean JSL unset
 endif
 
 ;freedata
@@ -51,6 +60,9 @@ endif
 if or(defined("notimer"),defined("nolives"))
   lifesaver:
   PHA
+  LDA $1b50
+  BEQ nsk
+  
   if defined("nolives")
     LDA #$1a0b
     CMP $ad
@@ -73,6 +85,17 @@ if or(defined("notimer"),defined("nolives"))
   sk:
   PLA
   JML $838a3e
+
+  set:
+  PHA
+  LDA #$0001
+  STA $1b50
+  PLA
+  JML $afaf6e
+
+  unset:
+  STZ $1b50
+  JML $afaf6e
 endif
 
 
